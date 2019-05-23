@@ -1,0 +1,557 @@
+% vim: set textwidth=120:
+
+% Example CV based on the 1.5-column-cv template. Main features:
+% * uses the Roboto font family and IcoMoon icon set;
+% * doesn't use colours, different font weights are used instead for styling;
+% * because the CV fits on one page, header and footer is empty, since there isn't much useful info to put there;
+% * includes a photo.
+\documentclass[a4paper,10pt]{article}
+
+
+% package imports
+% ---------------
+
+\usepackage[british,spanish]{babel} % for correct language and hyphenation and stuff
+\usepackage{calc}           % for easier length calculations (infix notation)
+\usepackage{enumitem}       % for configuring list environments
+\usepackage{fancyhdr}       % for setting header and footer
+\usepackage{fontspec}       % for fonts
+\usepackage{geometry}       % for setting margins (\newgeometry)
+\usepackage{graphicx}       % for pictures
+\usepackage{microtype}      % for microtypography stuff
+\usepackage{xcolor}         % for colours
+\usepackage{multicol}       % for multiple columns in itemize
+\usepackage{hyperref}       % for hyperlinks
+
+
+% margin and column widths
+% ------------------------
+
+% margins
+\newgeometry{left=15mm,right=15mm,top=15mm,bottom=15mm}
+
+% width of the gap between left and right column
+\newlength{\cvcolumngapwidth}
+\setlength{\cvcolumngapwidth}{3.5mm}
+
+% left column width
+\newlength{\cvleftcolumnwidth}
+\setlength{\cvleftcolumnwidth}{44.5mm}
+
+% right column width
+\newlength{\cvrightcolumnwidth}
+\setlength{\cvrightcolumnwidth}{\textwidth-\cvleftcolumnwidth-\cvcolumngapwidth}
+
+% set paragraph indentation to 0, because it screws up the whole layout otherwise
+\setlength{\parindent}{0mm}
+
+
+% style definitions
+% -----------------
+% style categories explanation:
+% * \cvnameXXX is used for the name;
+% * \cvsectionXXX is used for section names (left column, accompanied by a horizontal rule);
+% * \cvtitleXXX is used for job/education titles (right column);
+% * \cvdurationXXX is used for job/education durations (left column);
+% * \cvheadingXXX is used for headings (left column);
+% * \cvmainXXX (and \setmainfont) is used for main text;
+% * \cvruleXXX is used for the horizontal rules denoting sections.
+
+% font families
+\defaultfontfeatures{Ligatures=TeX} % reportedly a good idea, see https://tex.stackexchange.com/a/37251
+
+\newfontfamily{\cvnamefont}{Roboto Medium}
+\newfontfamily{\cvsectionfont}{Roboto Medium}
+\newfontfamily{\cvtitlefont}{Roboto Regular}
+\newfontfamily{\cvdurationfont}{Roboto Light Italic}
+\newfontfamily{\cvheadingfont}{Roboto Regular}
+\setmainfont{Roboto Light}
+
+% colours
+\definecolor{cvnamecolor}{HTML}{000000}
+\definecolor{cvsectioncolor}{HTML}{000000}
+\definecolor{cvtitlecolor}{HTML}{000000}
+\definecolor{cvdurationcolor}{HTML}{000000}
+\definecolor{cvheadingcolor}{HTML}{000000}
+\definecolor{cvmaincolor}{HTML}{000000}
+\definecolor{cvrulecolor}{HTML}{000000}
+
+\color{cvmaincolor}
+
+% styles
+\newcommand{\cvnamestyle}[1]{{\Huge\cvnamefont\textcolor{cvnamecolor}{#1}}}
+\newcommand{\cvsectionstyle}[1]{{\normalsize\cvsectionfont\textcolor{cvsectioncolor}{#1}}}
+\newcommand{\cvtitlestyle}[1]{{\large\cvtitlefont\textcolor{cvtitlecolor}{#1}}}
+\newcommand{\cvdurationstyle}[1]{{\small\cvdurationfont\textcolor{cvdurationcolor}{#1}}}
+\newcommand{\cvheadingstyle}[1]{{\normalsize\cvheadingfont\textcolor{cvheadingcolor}{#1}}}
+
+% hyperlinks style
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+}
+\urlstyle{same}
+
+% inter-item spacing
+% ------------------
+
+% vertical space after personal info and standard CV items
+\newlength{\cvafteritemskipamount}
+\setlength{\cvafteritemskipamount}{5mm plus 1.25mm minus 1.25mm}
+
+% vertical space after sections
+\newlength{\cvaftersectionskipamount}
+\setlength{\cvaftersectionskipamount}{2mm plus 0.5mm minus 0.5mm}
+
+% extra vertical space to be used when a section starts with an item with a heading (e.g. in the skills section),
+% so that the heading does not follow the section name too closely
+\newlength{\cvbetweensectionandheadingextraskipamount}
+\setlength{\cvbetweensectionandheadingextraskipamount}{1mm plus 0.25mm minus 0.25mm}
+
+
+% intra-item spacing
+% ------------------
+
+% vertical space after name
+\newlength{\cvafternameskipamount}
+\setlength{\cvafternameskipamount}{3mm plus 0.75mm minus 0.75mm}
+
+% vertical space after personal info lines
+\newlength{\cvafterpersonalinfolineskipamount}
+\setlength{\cvafterpersonalinfolineskipamount}{2mm plus 0.5mm minus 0.5mm}
+
+% vertical space after titles
+\newlength{\cvaftertitleskipamount}
+\setlength{\cvaftertitleskipamount}{1mm plus 0.25mm minus 0.25mm}
+
+% value to be used as parskip in right column of CV items and itemsep in lists (same for both, for consistency)
+\newlength{\cvparskip}
+\setlength{\cvparskip}{0.5mm plus 0.125mm minus 0.125mm}
+
+% set global list configuration (use parskip as itemsep, and no separation otherwise)
+\setlist{parsep=0mm,topsep=0mm,partopsep=0mm,itemsep=\cvparskip}
+
+
+% CV commands
+% -----------
+
+% creates a "personal info" CV item with the given left and right column contents, with appropriate vertical space after
+% @param #1 left column content (should be the CV photo)
+% @param #2 right column content (should be the name and personal info)
+\newcommand{\cvpersonalinfo}[2]{
+    % left and right column
+    \begin{minipage}[t]{\cvleftcolumnwidth}
+        \vspace{0mm} % XXX hack to align to top, see https://tex.stackexchange.com/a/11632
+        \raggedleft #1
+    \end{minipage}% XXX necessary comment to avoid unwanted space
+    \hspace{\cvcolumngapwidth}% XXX necessary comment to avoid unwanted space
+    \begin{minipage}[t]{\cvrightcolumnwidth}
+        \vspace{0mm} % XXX hack to align to top, see https://tex.stackexchange.com/a/11632
+        #2
+    \end{minipage}
+
+    % space after
+    \vspace{\cvafteritemskipamount}
+}
+
+% typesets a name, with appropriate vertical space after
+% @param #1 name text
+\newcommand{\cvname}[1]{
+    % name
+    \cvnamestyle{#1}
+
+    % space after
+    \vspace{\cvafternameskipamount}
+}
+
+% typesets a line of personal info beginning with an icon, with appropriate vertical space after
+% @param #1 parameters for the \includegraphics command used to include the icon
+% @param #2 icon filename
+% @param #3 line text
+\newcommand{\cvpersonalinfolinewithicon}[3]{
+    % icon, vertically aligned with text (see https://tex.stackexchange.com/a/129463)
+    \raisebox{.5\fontcharht\font`E-.5\height}{\includegraphics[#1]{#2}}
+    % text
+    #3
+
+    % space after
+    \vspace{\cvafterpersonalinfolineskipamount}
+}
+
+% creates a "section" CV item with the given left column content, a horizontal rule in the right column, and with
+% appropriate vertical space after
+% @param #1 left column content (should be the section name)
+\newcommand{\cvsection}[1]{
+    % left and right column
+    \begin{minipage}[t]{\cvleftcolumnwidth}
+        \raggedleft\cvsectionstyle{#1}
+    \end{minipage}% XXX necessary comment to avoid unwanted space
+    \hspace{\cvcolumngapwidth}% XXX necessary comment to avoid unwanted space
+    \begin{minipage}[t]{\cvrightcolumnwidth}
+        \textcolor{cvrulecolor}{\rule{\cvrightcolumnwidth}{0.3mm}}
+    \end{minipage}
+
+    % space after
+    \vspace{\cvaftersectionskipamount}
+}
+
+% creates a standard, multi-purpose CV item with the given left and right column contents, parskip set to cvparskip
+% in the right column, and with appropriate vertical space after
+% @param #1 left column content
+% @param #2 right column content
+\newcommand{\cvitem}[2]{
+    % left and right column
+    \begin{minipage}[t]{\cvleftcolumnwidth}
+        \raggedleft #1
+    \end{minipage}% XXX necessary comment to avoid unwanted space
+    \hspace{\cvcolumngapwidth}% XXX necessary comment to avoid unwanted space
+    \begin{minipage}[t]{\cvrightcolumnwidth}
+        \setlength{\parskip}{\cvparskip} #2
+    \end{minipage}
+
+    % space after
+    \vspace{\cvafteritemskipamount}
+}
+
+% typesets a title, with appropriate vertical space after
+% @param #1 title text
+\newcommand{\cvtitle}[1]{
+    % title
+    \cvtitlestyle{#1}
+
+    % space after
+    \vspace{\cvaftertitleskipamount}
+    % XXX need to subtract cvparskip here, because it is automatically inserted after the title "paragraph"
+    \vspace{-\cvparskip}
+}
+
+
+% header and footer
+% -----------------
+
+% set empty header and footer
+\pagestyle{empty}
+
+
+
+% preamble end/document start
+% ===========================
+
+\begin{document}
+
+
+% personal info
+% -------------
+
+\cvpersonalinfo{
+    % photo
+    \includegraphics[height=40mm]{cvphoto.png}
+}{
+    % name
+    \cvname{Angelo Fenoglio}
+
+    % address
+    \cvpersonalinfolinewithicon{height=4mm}{072-location.pdf}{
+        634 Enrique Carbó (E3116BEJ), Crespo, Entre Ríos
+    }
+
+    % phone number
+    \cvpersonalinfolinewithicon{height=4mm}{067-phone.pdf}{
+        +54 3435145689
+    }
+
+    % email address
+    \cvpersonalinfolinewithicon{height=4mm}{070-envelop.pdf}{
+        \href{mailto:angelofenoglio@gmail.com}{angelofenoglio@gmail.com}
+    }
+
+    % LinkedIn account
+    \cvpersonalinfolinewithicon{height=4mm}{458-linkedin.pdf}{
+        \href{https://www.linkedin.com/in/angelofenoglio/}{angelofenoglio}
+    }
+
+    % date of birth
+    Born 24 February 1993
+}
+
+
+% work experience
+% ---------------
+
+\cvsection{WORK EXPERIENCE}
+
+% serfe
+\cvitem{
+    \cvdurationstyle{May 2018 -- August 2018}
+}{
+    \cvtitle{Intern}
+
+    \href{https://www.serfe.com/en/}{Serfe}, Santo Tomé, Santa Fe Province
+
+    \begin{itemize}[leftmargin=*]
+        \item Developed a website for a real state agency using Wordpress. Agile methodologies were used for project planning and execution in two-week iterations.
+    \end{itemize}
+}
+
+% intel
+\cvitem{
+    \cvdurationstyle{January 2017 -- March 2017}
+}{
+    \cvtitle{Summer Intern}
+
+    Intel ASDC, Córdoba, Córdoba Province
+
+    \begin{itemize}[leftmargin=*]
+        \item Developed scripts to set up test enviorments deployed on AWS for the Helix Device Cloud product. 
+    \end{itemize}
+}
+
+
+% education
+% ---------
+
+\cvsection{EDUCATION}
+
+% bachelor's
+\cvitem{
+    \cvdurationstyle{Est Nov 2019}
+}{
+    \cvtitle{\href{http://fich.unl.edu.ar/planificaciones/carrera.php?id=3}{Informatics Engineering}}
+
+    Facultad de Ingeniería y Ciencias Hídricas, Universidad Nacional del Litoral
+    
+    Current state: Two final exams left to be taken on July, finishing bachelor's thesis final report.
+    
+    Thesis: \textit{Design and development of a simulation management tool for OpenFOAM. -- \small{Use case: Racing car aerodynamics.}}
+    \small{
+    \begin{itemize}
+        \item Goal: Design and develop a web application to create, setup, run and monitor OpenFOAM simulations, allowing quick modification of input parameters and automating output data handling. Provide a simulation comparison feature to enhance decision making processes. Manage users, permissions and processing clusters.
+    \end{itemize}{}
+    }
+
+}
+
+% highschool
+\cvitem{
+    \cvdurationstyle{2010}
+}{
+    \cvtitle{Bachiller con Capacitación Laboral como Auxiliar en Gestión \newline Empresarial}
+
+    Instituto Comercial Crespo D-33
+    
+    GPA: 9.07
+    
+}
+
+% courses and conferences
+% -----------------------
+
+\cvsection{COURSES \& CONFERENCES}
+
+\cvitem {
+    \cvdurationstyle{October 2016}
+}{
+    \cvheadingstyle{LAN bajo Mikrotik}
+    
+    Facultad de Ingeniería y Ciencias Hídricas, Universidad Nacional del Litoral
+    
+    Lecturer: \textit{Eng. Pablo Roa}
+    
+    \begin{itemize}[leftmargin=*]
+        \item Get to know and configure layer 1 and 2 protocols on Mikrotik. Network administration on The Dude.
+    \end{itemize}
+    
+    Topics:
+    \small{
+    \begin{itemize}
+        \item Ethernet configuration. Speed: Full Duplex/Half Duplex, statistics. Understanding Torch. Bridge mode. L2 filters. L2 NAT. STP and RST. Bridge ethernet-WiFi. VLAN. Cloud routers. Mesh networks. HWMPlus networks. L2 point-to-point connections. PPP and L2TP. Profiles. Client/Server configuration. PPPoE protocol.
+    \end{itemize}{}
+    }
+}
+\cvitem {
+    \cvdurationstyle{September 2016}
+}{
+    \cvheadingstyle{\href{http://45jaiio.sadio.org.ar/}{45 Jornadas Argentinas de Informática}}, Buenos Aires
+    
+    \begin{itemize}[leftmargin=*]
+        \item JAIIOs are organized as a group of different symposiums each one devoted to specific areas of informatics, with a length of one to two days, allowing the interaction of its participants.
+    \end{itemize}
+}
+\cvitem {
+    \cvdurationstyle{July 2016}
+}{
+    \cvheadingstyle{\href{https://eci2016.dc.uba.ar/t3.pdf}{Introduction to \textit{Application Security}}}
+    
+    \href{https://eci2016.dc.uba.ar/}{Escuela de Ciencias Informáticas}, Universidad de Buenos Aires
+    
+    Lecturer: \textit{Prof. Benjamin Livshits -- Microsoft Research}
+    
+    \begin{itemize}[leftmargin=*]
+        \item Introduce students to adversarial mindset, i.e., how to think like an attacker, and show an overview of the most common types of vulnerabilities in use in exploitation today.
+    \end{itemize}
+    Topics:
+    \small{
+    \begin{itemize}
+        \item Introduction to the adversarial mindset. Memory safety and buffer overruns. Web application security. Privacy. Tools for static and runtime analysis. Hacking for fun and profit: case studies: cars, routers, and other devices.
+    \end{itemize}{}
+    }
+}
+\cvitem {
+    \cvdurationstyle{July 2016}
+}{
+    \cvheadingstyle{Internet Of Things}
+    
+    \href{https://eci2016.dc.uba.ar/}{Escuela de Ciencias Informáticas}, Universidad de Buenos Aires
+    
+    Lecturer: \textit{Eng. Gabriel Carro -- Cablevisión, R+D Department}
+    
+    \begin{itemize}[leftmargin=*]
+        \item Show real, present IoT applications, and up to date, affordable technologies available in sensors and actuators.
+    \end{itemize}
+}
+\cvitem {
+    \cvdurationstyle{July 2016}
+}{
+    \cvheadingstyle{\href{https://eci2016.dc.uba.ar/n3.pdf}{Principios de \textit{Cyber-Security} para \textit{Entornos Corporativos}}}
+    
+    \href{https://eci2016.dc.uba.ar/}{Escuela de Ciencias Informáticas} , Universidad de Buenos Aires
+    
+    Lecturer: \textit{Matías Cuenca-Acuna, Leonardo Frittelli, Marcelo Lorenzati, María Emilia Torino \& Gustavo Domingo Yaguez -- Intel Security}
+    
+    \begin{itemize}[leftmargin=*]
+        \item Present how to structure enterprise security in order to provide protection and defense mechanisms from attackers.
+    \end{itemize}
+    
+    Topics:
+    \small{
+    \begin{itemize}
+        \item Anatomy of an attack and the Cyber Kill Chain. Enterprise network and infrastructure security. Defense in depth. Corporate networks protection. Corporate endpoints protection.
+    \end{itemize}{}
+    }
+}
+\cvitem {
+    \cvdurationstyle{December 2015}
+}{
+    \cvheadingstyle{Administración de Redes Informáticas mediante Mikrotik}
+    
+    Facultad de Ingeniería y Ciencias Hídricas, Universidad Nacional del Litoral
+    
+    Lecturer: \textit{Eng. Pablo Roa}
+    
+    \begin{itemize}[leftmargin=*]
+        \item Get to know Routerboard hardware platforms. Different ways of managing a Mikrotik node.  Learn specifications and requirements of such hardware.
+    \end{itemize}
+    
+    Topics:
+    \small{
+    \begin{itemize}
+        \item Different hardware platforms. Routerboard types: performance and applications. Licenses. Routerboard and PC. Routerboard BIOS management. Booting from FLASH NAND. Management and remote access. RS232 access. Command line interface. Password reset. Software upgrade. Mikrotik information repository. Common failures and problems.
+    \end{itemize}{}
+    }
+}
+\cvitem {
+    \cvdurationstyle{September 2015}
+}{
+    \cvheadingstyle{\href{http://44jaiio.sadio.org.ar/}{44 Jornadas Argentinas de Informática}}, Rosario, Santa Fe
+}
+\cvitem {
+    \cvdurationstyle{December 2014}
+}{
+    \cvheadingstyle{Workshop Virtualización}
+    
+    \href{https://www.gugler.com.ar/index.php}{Facultad de Ciencia y Tecnología}, Universidad Autónoma de Entre Ríos
+    
+    \begin{itemize}[leftmargin=*]
+        \item What is virtualization. VirtualBox.
+    \end{itemize}
+}
+\cvitem {
+    \cvdurationstyle{July 2014}
+}{
+    \cvheadingstyle{\href{https://www.gugler.com.ar/index.php/cursos-presenciales/sistemas-operativos/administracion-gnu-linux}{Administración \textit{GNU\textbackslash Linux}}}
+    
+    \href{https://www.gugler.com.ar/index.php}{Facultad de Ciencia y Tecnología}, Universidad Autónoma de Entre Ríos
+    
+    \begin{itemize}[leftmargin=*]
+        \item Basic GNU\textbackslash Linux and Free Software notions. Instalation, configuration and system administration.
+    \end{itemize}
+}
+
+% skills
+% ------
+
+\cvsection{SKILLS}
+
+\vspace{\cvbetweensectionandheadingextraskipamount}
+
+% languages
+\cvitem{
+    \cvheadingstyle{Languages}
+}{
+    English -- Professional working proficiency
+    
+    \begin{itemize}
+        \item University of Cambridge -- First Certificate in English \newline Grade: A
+        % Examination dec 2009 Issue feb 2010
+    \end{itemize}{}
+
+    Spanish -- Native proficiency
+}
+
+% tecnologies
+\cvitem{
+    \cvheadingstyle{Tecnologies}
+}{
+    Basic knowledge
+    \vspace{-3mm}
+    \begin{multicols}{2}
+        \begin{itemize}
+            \item C++
+            \item Java
+            \item PHP
+            \item Vue.js
+            \item JavaScript
+        \end{itemize}
+    \end{multicols}
+    \vspace{-3mm}
+
+    Intermediate knowledge
+    \vspace{-3mm}
+    \begin{multicols}{2}
+        \begin{itemize}
+            \item \textsc{GNU\textbackslash Linux}
+            \item Git
+            \item Python
+            \item Laravel
+            \item MySQL
+            \item HTML5
+            \item CSS
+        \end{itemize}{}
+    \end{multicols}
+    \vspace{-3mm}
+}
+
+% additional info
+% ---------------
+
+\cvsection{ADDITIONAL INFORMATION}
+
+\vspace{\cvbetweensectionandheadingextraskipamount}
+
+% interests
+\cvitem{
+    \cvheadingstyle{Interests}
+}{
+    Data Engineering, Cloud Computing, Automation
+}
+
+\cvitem{
+    \cvheadingstyle{Hobbies and crafts}
+}{
+    Sim Racing, Origami, Papercraft
+}
+
+\end{document}
