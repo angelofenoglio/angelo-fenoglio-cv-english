@@ -71,6 +71,7 @@
 \definecolor{cvnamecolor}{HTML}{000000}
 \definecolor{cvsectioncolor}{HTML}{000000}
 \definecolor{cvtitlecolor}{HTML}{000000}
+
 \definecolor{cvdurationcolor}{HTML}{000000}
 \definecolor{cvheadingcolor}{HTML}{000000}
 \definecolor{cvmaincolor}{HTML}{000000}
@@ -236,7 +237,6 @@
 \pagestyle{empty}
 
 
-
 % preamble end/document start
 % ===========================
 
@@ -255,7 +255,7 @@
 
     % address
     \cvpersonalinfolinewithicon{height=4mm}{072-location.pdf}{
-        634 Enrique Carbó (E3116BEJ), Crespo, Entre Ríos
+        26 Fray Mamerto Esquiú (X5004AEB), Córdoba, Córdoba
     }
 
     % phone number
@@ -283,6 +283,21 @@
 
 \cvsection{WORK EXPERIENCE}
 
+% mcafee
+\cvitem{
+    \cvdurationstyle{August 2019 -- January 2021}
+}{
+    \cvtitle{Software Development Engineer}
+
+    \href{https://www.mcafee.com/}{McAfee LLC}, Córdoba, Córdoba Province
+
+    \begin{itemize}[leftmargin=*]
+        \item Developed and maintained security content for \href{https://www.mcafee.com/enterprise/en-us/products/mvision-edr.html}{McAfee MVISION EDR} consisting of Python code for gathering and analyzing information from several data sources to be presented to security practitioners in an organized and meaningful manner. 
+        \item Migrated codebase to Python3.
+        \item Automation. 
+    \end{itemize}
+}
+
 % serfe
 \cvitem{
     \cvdurationstyle{May 2018 -- August 2018}
@@ -305,7 +320,7 @@
     Intel ASDC, Córdoba, Córdoba Province
 
     \begin{itemize}[leftmargin=*]
-        \item Developed scripts to set up test environments deployed on AWS for the Helix Device Cloud product. 
+        \item Developed Python scripts to set up test environments deployed on AWS for \href{https://software.intel.com/content/www/us/en/develop/documentation/hdc-getting-started/top.html}{Helix Device Cloud}.
     \end{itemize}
 }
 
@@ -317,20 +332,13 @@
 
 % bachelor's
 \cvitem{
-    \cvdurationstyle{Est Nov 2019}
+    \cvdurationstyle{Est 2021}
 }{
     \cvtitle{\href{http://fich.unl.edu.ar/planificaciones/carrera.php?id=3}{Informatics Engineering}}
 
     Facultad de Ingeniería y Ciencias Hídricas, Universidad Nacional del Litoral
     
-    Current state: Two final exams left to be taken on July, finishing bachelor's thesis final report.
-    
-    Thesis: \textit{Design and development of a simulation management tool for OpenFOAM. -- \small{Use case: Racing car aerodynamics.}}
-    \small{
-    \begin{itemize}
-        \item Goal: Design and develop a web application to create, setup, run and monitor OpenFOAM simulations, allowing quick modification of input parameters and automating output data handling. Provide a simulation comparison feature to enhance decision making processes. Manage users, permissions and processing clusters.
-    \end{itemize}{}
-    }
+    Current state: All courses approved, thesis pending.
 
 }
 
@@ -494,43 +502,36 @@
     English -- Professional working proficiency
     
     \begin{itemize}
-        \item University of Cambridge -- First Certificate in English \newline Grade: A
+        \item Educational Testing Service -- TOEIC \hspace{1mm} | \hspace{1mm} Grade: 990/990
+        % Examination oct 2019 Issue dec 2019 
+        \item University of Cambridge -- First Certificate in English \hspace{1mm} | \hspace{1mm} Grade: A
         % Examination dec 2009 Issue feb 2010
     \end{itemize}{}
 
     Spanish -- Native proficiency
 }
 
-% tecnologies
+% technologies
 \cvitem{
-    \cvheadingstyle{Tecnologies}
+    \cvheadingstyle{Programming}
 }{
-    Basic knowledge
     \vspace{-3mm}
-    \begin{multicols}{2}
-        \begin{itemize}
-            \item C++
-            \item Java
-            \item PHP
-            \item Vue.js
-            \item JavaScript
-        \end{itemize}
-    \end{multicols}
+    Python, TDD, JavaScript, Bash
+    % \begin{multicols}{2}
+    %     \begin{itemize}
+    %         \item Python
+    %         \item JavaScript
+    %         \item C++
+    %         \item TDD
+    %     \end{itemize}
+    % \end{multicols}
     \vspace{-3mm}
-
-    Intermediate knowledge
+}
+\cvitem{
+    \cvheadingstyle{Tools}
+}{
     \vspace{-3mm}
-    \begin{multicols}{2}
-        \begin{itemize}
-            \item \textsc{GNU\textbackslash Linux}
-            \item Git
-            \item Python
-            \item Laravel
-            \item MySQL
-            \item HTML5
-            \item CSS
-        \end{itemize}{}
-    \end{multicols}
+    \textsc{GNU\textbackslash Linux}, Git, Jira, TeamCity, AWS
     \vspace{-3mm}
 }
 
@@ -545,13 +546,7 @@
 \cvitem{
     \cvheadingstyle{Interests}
 }{
-    Data Engineering, Cloud Computing, Automation
-}
-
-\cvitem{
-    \cvheadingstyle{Hobbies and crafts}
-}{
-    Sim Racing, Origami, Papercraft
+    CyberSecurity, Cloud Computing, Automation, DevOps
 }
 
 \end{document}
